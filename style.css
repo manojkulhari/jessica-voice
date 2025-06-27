@@ -1,27 +1,22 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background: #f4f6f9;
-  padding: 2rem;
+  margin-top: 100px;
+  background-color: #f0f8ff;
 }
-.container {
-  max-width: 500px;
-  margin: auto;
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #ccc;
-}
+
 button {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  font-size: 20px;
+  padding: 10px 20px;
+  margin-top: 20px;
   cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: white;
 }
-#transcript, #response {
-  margin-top: 1rem;
-  font-size: 1.1rem;
+
+#user-text, #response {
+  margin-top: 20px;
+  font-size: 18px;
 }
