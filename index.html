@@ -1,25 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Jessica - Voice Assistant</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Talk to Jessica 🧑‍⚕️</h1>
-    
-    <!-- 🎤 Tap to Speak Button -->
-    <button id="speak">🎤 Tap to Speak</button>
-    
-    <!-- User Query Display -->
-    <p id="user-text"></p>
-    
-    <!-- Jessica's Response Display -->
-    <div id="response"></div>
-  </div>
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
-  <!-- Voice Assistant Logic -->
-  <script src="script.js"></script>
-</body>
-</html>
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// POST endpoint to receive Dialogflow-style queries
+app.post('/webhook', (req, res) => {
+  const userQuery = req.body.query || '';
+
+  let reply = "I'm not sure how to help with that.";
+
+  // Basic logic for demo responses
+  if (userQuery.toLowerCase().includes('appointment')) {
+    reply = "Sure, I can help book an appointment. Please tell me your full name.";
+  } else if (userQuery.toLowerCase().includes('hello') || userQuery.toLowerCase().includes('hi')) {
+    reply = "Hi, I'm Jessica from Mayo Clinic. How can I help you today?";
+  } else if (userQuery.toLowerCase().includes('thank')) {
+    reply = "You're welcome! Let me know if you need anything else.";
+  }
+
+  res.json({ reply });
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
