@@ -1,40 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-
-// POST endpoint for webhook
-app.post('/webhook', (req, res) => {
-  const userQuery = (req.body.query || '').toLowerCase();
-  console.log(`Incoming query: ${userQuery}`);
-
-  let reply = "I'm not sure how to help with that.";
-
-  if (userQuery.includes('appointment')) {
-    reply = "Sure, I can help book an appointment. Please tell me your full name.";
-  } else if (userQuery.includes('hello') || userQuery.includes('hi')) {
-    reply = "Hi, I'm Jessica from Mayo Clinic. How can I help you today?";
-  } else if (userQuery.includes('thank')) {
-    reply = "You're welcome! Let me know if you need anything else.";
-  } else if (userQuery.includes('emergency')) {
-    reply = "If this is an emergency, please dial your local emergency number or visit the nearest hospital.";
-  }
-
-  res.json({ reply });
-});
-
-// Default root route (for browser test)
-app.get('/', (req, res) => {
-  res.send('Jessica backend is running ✅');
-});
-
-// Start server
-app.listen(port, () => {
-  console.log(`✅ Jessica server live on port ${port}`);
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jessica - Voice Assistant</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Talk to Jessica 🧑‍⚕️</h1>
+    <button id="speak">🎤 Tap to Speak</button>
+    <div id="user-text"></div>
+    <div id="response"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
