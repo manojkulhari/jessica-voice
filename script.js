@@ -1,44 +1,43 @@
-const btn = document.getElementById('start-btn');
-const transcriptDiv = document.getElementById('transcript');
-const responseDiv = document.getElementById('response');
+const button = document.getElementById('speakBtn');
+const transcriptBox = document.getElementById('transcript');
 
-const renderWebhookURL = "https://jessica-mayo.onrender.com/webhook";
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = 'en-US';
 
-const synth = window.speechSynthesis;
-
-btn.onclick = () => {
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = 'en-US';
+button.addEventListener('click', () => {
   recognition.start();
+});
 
-  recognition.onresult = async (event) => {
-    const userSpeech = event.results[0][0].transcript;
-    transcriptDiv.textContent = "You: " + userSpeech;
+recognition.onresult = async (event) => {
+  const transcript = event.results[0][0].transcript;
+  transcriptBox.textContent = `You: ${transcript}`;
 
-    const dialogflowRequest = {
-      queryInput: {
-        text: {
-          text: userSpeech,
-          languageCode: "en-US"
+  try {
+    const response = await fetch('https://jessica-mayo.onrender.com/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        queryInput: {
+          text: {
+            text: transcript,
+            languageCode: 'en-US'
+          }
         }
-      }
-    };
-
-    const res = await fetch(renderWebhookURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dialogflowRequest)
+      })
     });
 
-    const data = await res.json();
-    const botReply = data.fulfillmentText || "Sorry, I didn't get that.";
-    responseDiv.textContent = "Jessica: " + botReply;
+    const data = await response.json();
+    const reply = data.fulfillmentText || 'Sorry, I didn\'t get that.';
 
-    const utter = new SpeechSynthesisUtterance(botReply);
-    synth.speak(utter);
-  };
-
-  recognition.onerror = (e) => {
-    transcriptDiv.textContent = "Error: " + e.error;
-  };
+    speak(reply);
+  } catch (error) {
+    speak('There was an error connecting to the server.');
+  }
 };
+
+function speak(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  speechSynthesis.speak(utterance);
+}
