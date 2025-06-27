@@ -3,8 +3,11 @@ const recognition = new SpeechRecognition();
 recognition.lang = 'en-US';
 
 const button = document.getElementById('speak');
-const userText = document.getElementById('user-text');
+const transcriptDiv = document.getElementById('transcript');
 const responseDiv = document.getElementById('response');
+
+// Simulated session ID (unique per tab load)
+const sessionId = Date.now().toString();
 
 button.addEventListener('click', () => {
   recognition.start();
@@ -12,27 +15,25 @@ button.addEventListener('click', () => {
 
 recognition.onresult = function (event) {
   const transcript = event.results[0][0].transcript;
-  userText.textContent = `You: ${transcript}`;
+  transcriptDiv.textContent = `You: ${transcript}`;
 
   fetch('https://jessica-mayo.onrender.com/webhook', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ query: transcript })
+    body: JSON.stringify({ query: transcript, sessionId })
   })
-  .then(response => response.json())
-  .then(data => {
-    const reply = data.reply || "Sorry, I didn't understand that.";
-    responseDiv.textContent = `Jessica: ${reply}`;
-    speak(reply);
-  })
-  .catch(error => {
-    console.error('Fetch error:', error);
-    const errorMsg = "Something went wrong while connecting to the server.";
-    responseDiv.textContent = `Jessica: ${errorMsg}`;
-    speak(errorMsg);
-  });
+    .then(response => response.json())
+    .then(data => {
+      const reply = data.reply || "Sorry, I didn't understand that.";
+      responseDiv.textContent = `Jessica: ${reply}`;
+      speak(reply);
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+      speak("Something went wrong while connecting to the server.");
+    });
 };
 
 function speak(text) {
