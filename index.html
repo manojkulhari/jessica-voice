@@ -9,25 +9,32 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// POST endpoint to receive Dialogflow-style queries
+// POST endpoint for webhook
 app.post('/webhook', (req, res) => {
-  const userQuery = req.body.query || '';
+  const userQuery = (req.body.query || '').toLowerCase();
+  console.log(`Incoming query: ${userQuery}`);
 
   let reply = "I'm not sure how to help with that.";
 
-  // Basic logic for demo responses
-  if (userQuery.toLowerCase().includes('appointment')) {
+  if (userQuery.includes('appointment')) {
     reply = "Sure, I can help book an appointment. Please tell me your full name.";
-  } else if (userQuery.toLowerCase().includes('hello') || userQuery.toLowerCase().includes('hi')) {
+  } else if (userQuery.includes('hello') || userQuery.includes('hi')) {
     reply = "Hi, I'm Jessica from Mayo Clinic. How can I help you today?";
-  } else if (userQuery.toLowerCase().includes('thank')) {
+  } else if (userQuery.includes('thank')) {
     reply = "You're welcome! Let me know if you need anything else.";
+  } else if (userQuery.includes('emergency')) {
+    reply = "If this is an emergency, please dial your local emergency number or visit the nearest hospital.";
   }
 
   res.json({ reply });
 });
 
-// Start the server
+// Default root route (for browser test)
+app.get('/', (req, res) => {
+  res.send('Jessica backend is running ✅');
+});
+
+// Start server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`✅ Jessica server live on port ${port}`);
 });
