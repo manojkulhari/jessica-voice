@@ -6,10 +6,12 @@ window.onload = function () {
   const button = document.getElementById('speak');
   const userText = document.getElementById('user-text');
   const responseBox = document.getElementById('response');
+  let isRecognizing = false;
 
   button.addEventListener('click', () => {
-    if (recognition) {
-      button.disabled = true; // prevent double click
+    if (!isRecognizing) {
+      isRecognizing = true;
+      button.disabled = true;
       recognition.start();
     }
   });
@@ -27,26 +29,27 @@ window.onload = function () {
       },
       body: JSON.stringify({ query: transcript })
     })
-      .then(response => response.json())
-      .then(data => {
-        const reply = data.reply || "Sorry, I didn't understand that.";
-        if (responseBox) {
-          responseBox.textContent = `Jessica: ${reply}`;
-        }
-        speak(reply);
-      })
-      .catch(error => {
-        console.error('Fetch error:', error);
-        const errorMsg = "Something went wrong while connecting to the server.";
-        if (responseBox) {
-          responseBox.textContent = `Jessica: ${errorMsg}`;
-        }
-        speak(errorMsg);
-      });
+    .then(response => response.json())
+    .then(data => {
+      const reply = data.reply || "Sorry, I didn't understand that.";
+      if (responseBox) {
+        responseBox.textContent = `Jessica: ${reply}`;
+      }
+      speak(reply);
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+      const errorMsg = "Something went wrong while connecting to the server.";
+      if (responseBox) {
+        responseBox.textContent = `Jessica: ${errorMsg}`;
+      }
+      speak(errorMsg);
+    });
   };
 
   recognition.onend = function () {
-    button.disabled = false; // re-enable mic button
+    isRecognizing = false;
+    button.disabled = false;
   };
 
   function speak(text) {
